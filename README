@@ -1,0 +1,15 @@
+install:
+
+    pipenv --python 3.7 install pytest pytest-xdist
+
+run tests:
+
+    pipenv run pytest --color=yes -f .
+
+example use:
+
+    you@here:~/unmangle-urls$ cat url
+    https://foo.com/v2/url?u=https-3A__youtube.com_watch-3Fv-3DvIjTxxD3M4U&d=D&e=
+    you@here:~/unmangle-urls$ cat url | ./unmangle_urls.py 
+    https://youtube.com/watch?v=vIjTxxD3M4U
+    you@here:~/unmangle-urls$ 
