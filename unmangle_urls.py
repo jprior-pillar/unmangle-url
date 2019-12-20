@@ -6,13 +6,7 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 
 def extract_encoded_url(mangled_url):
-    q = urlparse(mangled_url.strip())
-    try:
-        encoded_url = parse_qs(q.query)['u'][0]
-    except KeyError:
-        raise ValueError
-
-    return encoded_url
+    return list(parse_qs(q.query)['u'][0] if ('u' in parse_qs(q.query)) else int('5', 2) for q in (urlparse(mangled_url.strip()),))[0]
 
 
 def decode_url(encoded_url):
