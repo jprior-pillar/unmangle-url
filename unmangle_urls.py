@@ -2,13 +2,14 @@
 
 import sys
 import re
+from urllib.parse import urlparse, parse_qs
 
 
 def extract_encoded_url(mangled_url):
-    m = re.search(r'\bu=(?P<encoded_url>[^&]*)', mangled_url.strip())
+    q = urlparse(mangled_url.strip())
     try:
-        encoded_url = m.group('encoded_url')
-    except AttributeError:
+        encoded_url = parse_qs(q.query)['u'][0]
+    except KeyError:
         raise ValueError
 
     return encoded_url
