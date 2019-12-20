@@ -2,7 +2,7 @@
 
 import sys
 import re
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 
 
 def extract_encoded_url(mangled_url):
@@ -15,24 +15,10 @@ def extract_encoded_url(mangled_url):
     return encoded_url
 
 
-def decode_chunk(chunk):
-    encoded_character_pattern = r'([-](?P<character_code>[0-9A-F]{2}))'
-    m = re.fullmatch(encoded_character_pattern, chunk)
-    try:
-        decoded_chunk = chr(int(m.group('character_code'), 0x10))
-    except AttributeError:
-        decoded_chunk = chunk
-
-    return decoded_chunk
-
-
 def decode_url(encoded_url):
-    encoded_character_pattern = re.compile(r'([-][0-9A-F]{2})')
-    encoded_url_with_slashes = re.sub('_', '/', encoded_url)
-    encoded_chunks = re.split(encoded_character_pattern, encoded_url_with_slashes)
-    decoded_chunks = map(decode_chunk, encoded_chunks)
-    decoded_url = ''.join(decoded_chunks)
-
+    encoded_url_with_percents = re.sub('-', '%', encoded_url)
+    encoded_url_with_underscores = unquote(encoded_url_with_percents)
+    decoded_url = re.sub('_', '/', encoded_url_with_underscores)
     return decoded_url
 
 
