@@ -69,16 +69,35 @@ def test_extract_url(mangled_url, decoded_url):
     assert expected_url == actual_url
 
 
-def test_main(capsys):
-    lines = (
-        ( 'https://foo.com/v2/url?u=https-3A__www.youtube.com_&d=D&e=\n' ),
-        ( 'https://bar.com/v3/url?u=http-3A__colug.net_\n' ),
-    )
-    expected_output = (
-        'https://www.youtube.com/\n'
-        'http://colug.net/\n'
-    )
-    main(lines)
+test_data = (
+    (
+        ['unmangle_urls.py'],
+        (
+            ( 'https://foo.com/v2/url?u=https-3A__www.youtube.com_&d=D&e=\n' ),
+            ( 'https://bar.com/v3/url?u=http-3A__colug.net_\n' ),
+        ),
+        (
+            'https://www.youtube.com/\n'
+            'http://colug.net/\n'
+        ),
+    ),
+    (
+        [
+            'unmangle_urls.py',
+            'https://bar.com/v3/url?u=http-3A__colug.net_',
+        ],
+        (
+            ( 'https://foo.com/v2/url?u=https-3A__www.youtube.com_&d=D&e=\n' ),
+        ),
+        (
+            'http://colug.net/\n'
+        ),
+    ),
+)
+@pytest.mark.parametrize(
+    'command_line_arguments, lines, expected_output', test_data)
+def test_main(command_line_arguments, lines, expected_output, capsys):
+    main(command_line_arguments[1:] or lines)
     captured = capsys.readouterr()
     actual_output = captured.out
     assert expected_output == actual_output
